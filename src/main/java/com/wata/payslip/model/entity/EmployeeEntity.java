@@ -1,4 +1,4 @@
-package com.wata.payslip.model;
+package com.wata.payslip.model.entity;
 
 import java.sql.Date;
 
@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "Employee")
@@ -52,6 +54,7 @@ public class EmployeeEntity {
     }
     
     @Column(name = "Telephone", nullable = true)
+    @Size(min = 10, max = 12)
     public String getTelephone() {
         return telephone;
     }
@@ -61,6 +64,7 @@ public class EmployeeEntity {
     }
 
     @Column(name = "Email", nullable = false, unique = true)
+    @Email
     public String getEmail() {
         return email;
     }
