@@ -1,7 +1,9 @@
 package com.wata.payslip.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -39,6 +41,7 @@ public class EmployeeService {
 	 } 
 	 
 	public EmployeeEntity replaceEmployee(EmployeeDTO employeeDTO,Integer id) {
+		
 		EmployeeEntity employee = employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id + ""));
 		if (employeeDTO.birthday != null) {
 			employee.setBirthday(employeeDTO.birthday);
@@ -63,5 +66,18 @@ public class EmployeeService {
 		return employeeRepository.save(employee);
 	}	 
 	 
- 
+	public List<EmployeeEntity> getEmployeeByName(String fullName ) {
+//		List<EmployeeEntity> data = employeeRepository.findAll();
+		ArrayList<EmployeeEntity> result = new ArrayList<EmployeeEntity>();
+//		for (EmployeeEntity employeeEntity : data) {
+//			if (employeeEntity.getFullName().toLowerCase().trim().contains(fullName.toLowerCase().trim())) {
+//				result.add(employeeEntity);
+//			}
+//		}
+		
+		EmployeeSpecification spec = new EmployeeSpecification(new SearchCriteria("fullName", ":", fullName));
+		result = (ArrayList<EmployeeEntity>) employeeRepository.findAll(spec);
+		return result;
+	}
+	
 }

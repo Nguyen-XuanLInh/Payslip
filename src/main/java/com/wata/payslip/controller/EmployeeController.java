@@ -48,11 +48,16 @@ public class EmployeeController {
 	@DeleteMapping("/employee/{id}")
 	public String deleteEmployeeById(@PathVariable(value = "id") Integer id) {
 			return employeeService.deleteEmployeeById(id);
-		}
+	}
 	
 	
 	@PutMapping("/employee/{id}")
 	public EmployeeEntity replaceEmployee(@RequestBody EmployeeDTO employeeDTO, @PathVariable Integer id) {
 		return employeeService.replaceEmployee(employeeDTO, id);
-	  }
+	}
+	
+	@GetMapping("/employee/search/{fullName}")
+    public List <EmployeeEntity> getEmployeeByName(@PathVariable(value = "fullName") String fullName) {
+		return employeeService.getEmployeeByName(fullName);
+    }
 }

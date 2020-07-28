@@ -1,6 +1,7 @@
 package com.wata.payslip.model.entity;
 
 import java.sql.Date;
+import java.util.Random;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -45,6 +48,7 @@ public class EmployeeEntity {
     }
 
     @Column(name = "FullName", nullable = false)
+    @Pattern(regexp = "[A-Za-z \\t\\n\\x0B\\f\\r]+")
     public String getFullName() {
         return fullName;
     }
@@ -64,7 +68,7 @@ public class EmployeeEntity {
     }
 
     @Column(name = "Email", nullable = false, unique = true)
-    @Email
+    @Email(regexp = ".+@.+\\..+")
     public String getEmail() {
         return email;
     }
@@ -74,6 +78,7 @@ public class EmployeeEntity {
     }
 
     @Column(name = "Birthday", nullable = false)
+    //@Past
     public Date getBirthday() {
         return birthday;
     }
@@ -90,4 +95,5 @@ public class EmployeeEntity {
     public void setJoinDay(Date joinDay) {
         this.joinDay = joinDay;
     }
+   
 }
