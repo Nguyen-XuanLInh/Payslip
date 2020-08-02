@@ -1,26 +1,23 @@
 package com.wata.payslip.service;
 
+import static java.lang.Integer.parseInt;
+
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.wata.payslip.model.dto.EmployeeDTO;
 import com.wata.payslip.model.dto.PaginationList;
-import com.wata.payslip.model.dto.SearchData;
+import com.wata.payslip.model.dto.searchString;
 import com.wata.payslip.model.entity.EmployeeEntity;
 import com.wata.payslip.repository.IEmployeeRepository;
 
@@ -136,74 +133,27 @@ public class EmployeeService {
 		return result;
 	}
 	
-
-	public ResponseEntity<Map<String, Object>> searchEmployeeByFullName(SearchData searchData) {
-		String fullName = searchData.getSearchValue();
-		Integer currentPage, pageSize;
-		String sort = searchData.getSort();
+	public PaginationList<EmployeeEntity> getEmployees(String searchString, String pageSize, String currentPage) {
 		
-		if (searchData.getCurrentPage() != null) {
-			currentPage = searchData.getCurrentPage();
-		} else {
-			currentPage = 0;
+		int pagesize = Integer.parseInt(pageSize);
+		int currentpage = Integer.parseInt(currentPage);
+		
+		ArrayList<EmployeeEntity> result = new ArrayList<EmployeeEntity>();
+		result =  (ArrayList<EmployeeEntity>) employeeRepository.findAll();
+		
+		if(searchString != "") {
+			EmployeeSpecification spec = new EmployeeSpecification(new SearchCriteria("fullName", ":", searchString));
+			result = (ArrayList<EmployeeEntity>) employeeRepository.findAll(spec);
 		}
+		Integer total = result.size();
+		Integer totalPage = total/pagesize;
+		Integer totalItem = result.size();
+		result = (ArrayList<EmployeeEntity>) result.subList((currentpage - 1) * pagesize, (currentpage - 1) * pagesize + pagesize);
+		PaginationList<EmployeeEntity> pagiantionlist = new PaginationList<EmployeeEntity>(result, currentpage, totalPage, pagesize, totalItem);
 		
-		if (searchData.getPageSize() != null) {
-			pageSize = searchData.getPageSize();
-		} else {
-			pageSize = 3;
-		}
 		
-		
-		try {
-		      List<EmployeeEntity> employeeEntities = new ArrayList<EmployeeEntity>();
-		      Pageable paging;
-		      
-		      if (sort != null) {
-		    	  switch (sort) {
-			      	case "ASC":
-			      		paging = PageRequest.of(currentPage, pageSize, Sort.by("fullName"));
-			      		break;
-			      	case "DESC":
-			      		paging = PageRequest.of(currentPage, pageSize, Sort.by("fullName").descending());
-			      		break;
-			      	default:
-			      		paging = PageRequest.of(currentPage, pageSize);
-			      		break;
-			      } 
-		      } else {
-		    	  paging = PageRequest.of(currentPage, pageSize);
-		      }
-		      
-		      
-		      Page<EmployeeEntity> pageTuts;
-		      if (fullName == null) {
-		    	  pageTuts = employeeRepository.findAll(paging);
-		      } else {
-		    	  pageTuts = employeeRepository.findByFullNameContaining(fullName.trim(), paging);
-		      }
-
-		      employeeEntities = pageTuts.getContent();
-
-		      if (employeeEntities.isEmpty()) {
-		        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		      }
-
-		      Map<String, Object> response = new HashMap<>();
-		      response.put("currentPage", pageTuts.getNumber());
-		      response.put("totalItems", pageTuts.getTotalElements());
-		      response.put("totalPages", pageTuts.getTotalPages());
-		      response.put("employee", employeeEntities);
-
-		      return new ResponseEntity<>(response, HttpStatus.OK);
-		    } catch (Exception e) {
-		      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		    }
-		}
-
-		public ArrayList<EmployeeEntity> findByFullName(String fullName) {
-		employeeRepository.findByName(fullName);
-		return employeeRepository.findByName(fullName);
+		return pagiantionlist;
 	}
+
 	
 }

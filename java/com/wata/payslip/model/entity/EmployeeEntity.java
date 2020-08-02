@@ -1,6 +1,7 @@
 package com.wata.payslip.model.entity;
 
 import java.sql.Date;
+import java.util.Random;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -54,8 +58,7 @@ public class EmployeeEntity {
         this.fullName = fullName;
     }
     
-    @Column(name = "Telephone", nullable = false)
-    @Pattern(regexp = "[0-9]+")
+    @Column(name = "Telephone", nullable = true)
     @Size(min = 10, max = 12)
     public String getTelephone() {
         return telephone;
@@ -76,8 +79,7 @@ public class EmployeeEntity {
     }
 
     @Column(name = "Birthday", nullable = false)
-    //@DateTimeFormat(pattern = "yyyy-mm-dd")
-    //@Past
+    //@PastOrPresent
     public Date getBirthday() {
         return birthday;
     }
@@ -87,7 +89,6 @@ public class EmployeeEntity {
     }
     
     @Column(name = "JoinDay", nullable = false)
-    //@PastOrPresent
     public Date getJoinDay() {
         return joinDay;
     }
