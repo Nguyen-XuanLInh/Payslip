@@ -1,6 +1,5 @@
 package com.wata.payslip.service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.wata.payslip.model.dto.EmployeeDTO;
-import com.wata.payslip.model.dto.PaginationList;
 import com.wata.payslip.model.dto.SearchData;
 import com.wata.payslip.model.entity.EmployeeEntity;
 import com.wata.payslip.repository.IEmployeeRepository;
@@ -28,29 +26,30 @@ import com.wata.payslip.repository.IEmployeeRepository;
 public class EmployeeService {
 	@Autowired
 	private IEmployeeRepository employeeRepository;
-	
+
 	public List<EmployeeEntity> getAllEmployee() {
 		return employeeRepository.findAll();
 	}
-	
+
 	public EmployeeEntity createEmployee(EmployeeDTO employee) {
 		return employeeRepository.save(employee.toEntity());
 	}
 
-	 public Optional <EmployeeEntity> getEmployeeById(Integer id) {
-		 employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id + ""));
-		 return employeeRepository.findById(id);
-	 }
-	 
-	 public String deleteEmployeeById(Integer id) {
-         employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id + ""));
-         employeeRepository.deleteById(id);   
-         return "ok";
-	 } 
-	 
-	public EmployeeEntity replaceEmployee(EmployeeDTO employeeDTO,Integer id) {
-		
-		EmployeeEntity employee = employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id + ""));
+	public Optional<EmployeeEntity> getEmployeeById(Integer id) {
+		employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id + ""));
+		return employeeRepository.findById(id);
+	}
+
+	public String deleteEmployeeById(Integer id) {
+		employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id + ""));
+		employeeRepository.deleteById(id);
+		return "ok";
+	}
+
+	public EmployeeEntity replaceEmployee(EmployeeDTO employeeDTO, Integer id) {
+
+		EmployeeEntity employee = employeeRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException(id + ""));
 		if (employeeDTO.birthday != null) {
 			employee.setBirthday(employeeDTO.birthday);
 		}
@@ -58,152 +57,82 @@ public class EmployeeService {
 		if (employeeDTO.email != null) {
 			employee.setEmail(employeeDTO.email);
 		}
-		
+
 		if (employeeDTO.fullName != null) {
 			employee.setFullName(employeeDTO.fullName);
 		}
-		
+
 		if (employeeDTO.telephone != null) {
 			employee.setTelephone(employeeDTO.telephone);
 		}
-		
+
 		if (employeeDTO.joinDay != null) {
 			employee.setJoinDay(employeeDTO.joinDay);
 		}
 
 		return employeeRepository.save(employee);
-	}	 
-	 
-	public List<EmployeeEntity> getEmployeeByName(String fullName ) {
-//		List<EmployeeEntity> data = employeeRepository.findAll();
-		ArrayList<EmployeeEntity> result = new ArrayList<EmployeeEntity>();
-//		for (EmployeeEntity employeeEntity : data) {
-//			if (employeeEntity.getFullName().toLowerCase().trim().contains(fullName.toLowerCase().trim())) {
-//				result.add(employeeEntity);
-//			}
-//		}
-		
-		EmployeeSpecification spec = new EmployeeSpecification(new SearchCriteria("fullName", ":", fullName));
-		result = (ArrayList<EmployeeEntity>) employeeRepository.findAll(spec);
-		return result;
 	}
-	
-	public List<EmployeeEntity> createSearchEmployee(EmployeeDTO employee) {
-		ArrayList<EmployeeEntity> result = new ArrayList<EmployeeEntity>();
-		ArrayList<EmployeeEntity> data = (ArrayList<EmployeeEntity>) employeeRepository.findAll();
-		ArrayList<EmployeeEntity> tmp = new ArrayList<EmployeeEntity>();
-		
-		if (employee.id != null) {
-			result.clear();
-			for (EmployeeEntity employeeEntity : data) {
-				if (employeeEntity.getId() == employee.id) {
-					result.add(employeeEntity);
-					return result;
-				}
-			}
-		}
-		
-		if (employee.email != null) {
-			result.clear();
-			for (EmployeeEntity employeeEntity : data) {
-				if (employeeEntity.getEmail() == employee.email) {
-					result.add(employeeEntity);
-					return result;
-				}
-			}
-		}
-		
-		if (employee.fullName == null) {
-			employee.fullName = "";
-		}
-		
-		if (employee.telephone == null) {
-			employee.telephone = "";
-		}
-		
-		if (employee.birthday == null) {
-			employee.birthday = new Date(0);
-		}
-		
-		if (employee.joinDay == null) {
-			employee.joinDay = new Date(0);
-		}
-		
-//		for (EmployeeEntity employeeEntity : data) {
-//			if (employeeEntity.getFullName().toLowerCase().contains(employee.))
-//		}
-		
-		return result;
-	}
-	
 
 	public ResponseEntity<Map<String, Object>> searchEmployeeByFullName(SearchData searchData) {
 		String fullName = searchData.getSearchValue();
 		Integer currentPage, pageSize;
 		String sort = searchData.getSort();
-		
+
 		if (searchData.getCurrentPage() != null) {
 			currentPage = searchData.getCurrentPage();
 		} else {
 			currentPage = 0;
 		}
-		
+
 		if (searchData.getPageSize() != null) {
 			pageSize = searchData.getPageSize();
 		} else {
 			pageSize = 3;
 		}
-		
-		
+
 		try {
-		      List<EmployeeEntity> employeeEntities = new ArrayList<EmployeeEntity>();
-		      Pageable paging;
-		      
-		      if (sort != null) {
-		    	  switch (sort) {
-			      	case "ASC":
-			      		paging = PageRequest.of(currentPage, pageSize, Sort.by("fullName"));
-			      		break;
-			      	case "DESC":
-			      		paging = PageRequest.of(currentPage, pageSize, Sort.by("fullName").descending());
-			      		break;
-			      	default:
-			      		paging = PageRequest.of(currentPage, pageSize);
-			      		break;
-			      } 
-		      } else {
-		    	  paging = PageRequest.of(currentPage, pageSize);
-		      }
-		      
-		      
-		      Page<EmployeeEntity> pageTuts;
-		      if (fullName == null) {
-		    	  pageTuts = employeeRepository.findAll(paging);
-		      } else {
-		    	  pageTuts = employeeRepository.findByFullNameContaining(fullName.trim(), paging);
-		      }
+			List<EmployeeEntity> employeeEntities = new ArrayList<EmployeeEntity>();
+			Pageable paging;
 
-		      employeeEntities = pageTuts.getContent();
+			if (sort != null) {
+				switch (sort) {
+				case "ASC":
+					paging = PageRequest.of(currentPage, pageSize, Sort.by("fullName"));
+					break;
+				case "DESC":
+					paging = PageRequest.of(currentPage, pageSize, Sort.by("fullName").descending());
+					break;
+				default:
+					paging = PageRequest.of(currentPage, pageSize);
+					break;
+				}
+			} else {
+				paging = PageRequest.of(currentPage, pageSize);
+			}
 
-		      if (employeeEntities.isEmpty()) {
-		        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		      }
+			Page<EmployeeEntity> pageTuts;
+			if (fullName == null) {
+				pageTuts = employeeRepository.findAll(paging);
+			} else {
+				pageTuts = employeeRepository.findByFullNameContaining(fullName.trim(), paging);
+			}
 
-		      Map<String, Object> response = new HashMap<>();
-		      response.put("currentPage", pageTuts.getNumber());
-		      response.put("totalItems", pageTuts.getTotalElements());
-		      response.put("totalPages", pageTuts.getTotalPages());
-		      response.put("employee", employeeEntities);
+			employeeEntities = pageTuts.getContent();
 
-		      return new ResponseEntity<>(response, HttpStatus.OK);
-		    } catch (Exception e) {
-		      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		    }
+			if (employeeEntities.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("currentPage", pageTuts.getNumber());
+			response.put("totalItems", pageTuts.getTotalElements());
+			response.put("totalPages", pageTuts.getTotalPages());
+			response.put("employee", employeeEntities);
+
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		public ArrayList<EmployeeEntity> findByFullName(String fullName) {
-		employeeRepository.findByName(fullName);
-		return employeeRepository.findByName(fullName);
 	}
-	
+
 }

@@ -76,8 +76,8 @@ public class EmployeeEntity {
     }
 
     @Column(name = "Birthday", nullable = false)
-    //@DateTimeFormat(pattern = "yyyy-mm-dd")
-    //@Past
+//    @DateTimeFormat(pattern = "yyyy-mm-dd")
+//    @Past
     public Date getBirthday() {
         return birthday;
     }
