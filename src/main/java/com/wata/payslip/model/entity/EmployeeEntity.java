@@ -1,12 +1,15 @@
 package com.wata.payslip.model.entity;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
@@ -21,79 +24,86 @@ public class EmployeeEntity {
 	private String email;
 	private Date birthday;
 	private Date joinDay;
-	
+
 	public EmployeeEntity(Integer id, String fullName, String telephone, String email, Date birthday, Date joinDay) {
-        this.id = id;
-        this.fullName = fullName;
-        this.telephone = telephone;
-        this.email = email;
-        this.birthday = birthday;
-        this.joinDay = joinDay;
-    }
+		this.id = id;
+		this.fullName = fullName;
+		this.telephone = telephone;
+		this.email = email;
+		this.birthday = birthday;
+		this.joinDay = joinDay;
+	}
 
-    public EmployeeEntity() {
-    }
+	public EmployeeEntity() {
+		
+	}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Integer getId() {
-        return id;
-    }
+//	@OneToMany(mappedBy = "employeeEntity")
+//	private List<TimeLogEntity> timeLog = new ArrayList<>();
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	@OneToMany(mappedBy = "employeeEntity")
+	private List<AssigmentEntity> assigment = new ArrayList<>();
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	public Integer getId() {
+		return id;
+	}
 
-    @Column(name = "FullName", nullable = false)
-    @Pattern(regexp = "[A-Za-z \\t\\n\\x0B\\f\\r\\p{L}]+")
-    public String getFullName() {
-        return fullName;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-    
-    @Column(name = "Telephone", nullable = false)
-    @Pattern(regexp = "[0-9]+")
-    @Size(min = 10, max = 12)
-    public String getTelephone() {
-        return telephone;
-    }
+	@Column(name = "FullName", nullable = false)
+	@Pattern(regexp = "[A-Za-z \\t\\n\\x0B\\f\\r\\p{L}]+")
+	public String getFullName() {
+		return fullName;
+	}
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
 
-    @Column(name = "Email", nullable = false, unique = true)
-    @Email(regexp = ".+@.+\\..+")
-    public String getEmail() {
-        return email;
-    }
+	@Column(name = "Telephone", nullable = false)
+	@Pattern(regexp = "[0-9]+")
+	@Size(min = 10, max = 12)
+	public String getTelephone() {
+		return telephone;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
 
-    @Column(name = "Birthday", nullable = false)
+	@Column(name = "Email", nullable = false, unique = true)
+	@Email(regexp = ".+@.+\\..+")
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Column(name = "Birthday", nullable = false)
 //    @DateTimeFormat(pattern = "yyyy-mm-dd")
 //    @Past
-    public Date getBirthday() {
-        return birthday;
-    }
+	public Date getBirthday() {
+		return birthday;
+	}
 
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
-    
-    @Column(name = "JoinDay", nullable = false)
-    //@PastOrPresent
-    public Date getJoinDay() {
-        return joinDay;
-    }
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
 
-    public void setJoinDay(Date joinDay) {
-        this.joinDay = joinDay;
-    }
-   
+	@Column(name = "JoinDay", nullable = false)
+	// @PastOrPresent
+	public Date getJoinDay() {
+		return joinDay;
+	}
+
+	public void setJoinDay(Date joinDay) {
+		this.joinDay = joinDay;
+	}
+
 }
